@@ -2,16 +2,28 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Viewport com safe-areas (iOS) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
   <title>World Retro - Loja</title>
+
+  <!-- PWA / Manifesto -->
   <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
   <link rel="icon" type="image/png" href="icons/icon-192.png">
-  <meta name="theme-color" content="#111827">
+
+  <!-- Cores de tema (barra do mobile e splash) -->
+  <meta name="theme-color" content="#0f172a">
+
+  <!-- Estilos e App -->
   <link rel="stylesheet" href="styles.css">
   <script defer src="app.js"></script>
 </head>
-<body>
-<header class="topbar">
+
+<!-- Ativa padding seguro em aparelhos com notch/home-indicator -->
+<body class="body-safe">
+<header class="topbar container">
   <div class="brand">
     <span class="logo">🎮</span>
     <h1>World Retro</h1>
@@ -20,18 +32,21 @@
     <button id="navCatalog" class="btn">Catálogo</button>
     <button id="navOrders" class="btn">Meus Pedidos</button>
     <button id="navSupport" class="btn">Suporte</button>
-    <button id="openCart" class="btn btn-cart">🛒 <span id="cartCount">0</span></button>
+    <button id="openCart" class="btn btn-cart" aria-label="Abrir carrinho">
+      🛒 <span id="cartCount" aria-live="polite">0</span>
+    </button>
   </nav>
 </header>
 
-<main id="app" class="container">
+<main id="app" class="container" style="padding:12px 0 24px;">
   <!-- Home / catálogo -->
   <section id="catalogView" class="view active">
-    <div class="banner">
-      <h2>Lançamentos & Promoções</h2>
-      <p>Nostalgia de verdade. Mídia negra diamante, manual colorido e case lacrada.</p>
+    <div class="panel banner" style="margin-bottom:14px;">
+      <h2 class="h2">Lançamentos & Promoções</h2>
+      <p class="lead">Nostalgia de verdade. Mídia negra diamante, manual colorido e case lacrada.</p>
     </div>
-    <div class="toolbar">
+
+    <div class="panel toolbar" style="margin-bottom:14px; display:grid; gap:10px;">
       <input id="searchInput" class="input" placeholder="Buscar jogo ou console..." />
       <select id="filterConsole" class="input">
         <option value="">Todos os consoles</option>
@@ -43,29 +58,35 @@
         <option value="nameAsc">Nome: A → Z</option>
       </select>
     </div>
-    <div id="catalogGrid" class="grid"></div>
+
+    <!-- grid de produtos: IDs preservados para o app.js -->
+    <div id="catalogGrid" class="grid products"></div>
   </section>
 
   <!-- Detalhe do produto -->
   <section id="productView" class="view">
-    <button class="link" id="backToCatalog">← Voltar</button>
-    <div id="productDetail"></div>
+    <button class="link" id="backToCatalog" aria-label="Voltar para o catálogo">← Voltar</button>
+    <div id="productDetail" class="panel"></div>
   </section>
 
   <!-- Carrinho -->
   <section id="cartView" class="view">
-    <button class="link" id="backFromCart">← Voltar</button>
-    <h2>Seu Carrinho</h2>
-    <div id="cartItems"></div>
-    <div class="shipping">
+    <button class="link" id="backFromCart" aria-label="Voltar para o catálogo">← Voltar</button>
+    <h2 class="h2">Seu Carrinho</h2>
+
+    <div id="cartItems" class="list" style="margin-bottom:12px;"></div>
+
+    <div class="panel shipping" style="margin-bottom:12px;">
       <label for="cepInput">Calcular frete (CEP)</label>
       <div class="row">
-        <input id="cepInput" class="input" placeholder="00000-000">
+        <input id="cepInput" class="input" placeholder="00000-000" inputmode="numeric" pattern="\\d{5}-?\\d{3}">
         <button id="calcFrete" class="btn">Calcular</button>
       </div>
       <div id="freteResult" class="muted"></div>
     </div>
-    <div id="cartTotals" class="totals"></div>
+
+    <div id="cartTotals" class="totals panel" style="margin-bottom:12px;"></div>
+
     <div class="row end">
       <button id="goCheckout" class="btn btn-primary">Finalizar Pedido</button>
     </div>
@@ -73,30 +94,33 @@
 
   <!-- Checkout -->
   <section id="checkoutView" class="view">
-    <button class="link" id="backFromCheckout">← Voltar</button>
-    <h2>Checkout</h2>
+    <button class="link" id="backFromCheckout" aria-label="Voltar para o carrinho">← Voltar</button>
+    <h2 class="h2">Checkout</h2>
     <form id="checkoutForm" class="form">
-      <fieldset>
+      <fieldset class="panel">
         <legend>Dados do Cliente</legend>
         <input class="input" name="nome" placeholder="Nome completo" required>
         <input class="input" name="email" type="email" placeholder="Email" required>
-        <input class="input" name="telefone" placeholder="WhatsApp (opcional)">
+        <input class="input" name="telefone" placeholder="WhatsApp (opcional)" inputmode="tel">
       </fieldset>
-      <fieldset>
+
+      <fieldset class="panel">
         <legend>Endereço de Entrega</legend>
-        <input class="input" name="cep" placeholder="CEP" required>
+        <input class="input" name="cep" placeholder="CEP" required inputmode="numeric" pattern="\\d{5}-?\\d{3}">
         <input class="input" name="endereco" placeholder="Rua e número" required>
         <input class="input" name="bairro" placeholder="Bairro" required>
         <input class="input" name="cidade" placeholder="Cidade" required>
         <input class="input" name="estado" placeholder="UF" required maxlength="2">
       </fieldset>
-      <fieldset>
+
+      <fieldset class="panel">
         <legend>Pagamento</legend>
         <label class="row"><input type="radio" name="pagamento" value="pix" checked> Pix</label>
         <label class="row"><input type="radio" name="pagamento" value="cartao"> Cartão de crédito/débito</label>
         <label class="row"><input type="radio" name="pagamento" value="boleto"> Boleto</label>
       </fieldset>
-      <div id="checkoutSummary" class="totals"></div>
+
+      <div id="checkoutSummary" class="totals panel" style="margin-bottom:12px;"></div>
       <button class="btn btn-primary" type="submit">Confirmar Compra</button>
     </form>
     <p class="muted">* Este é um protótipo. Integração de pagamento e cálculo de frete dos Correios podem ser adicionados depois.</p>
@@ -104,16 +128,16 @@
 
   <!-- Pedidos -->
   <section id="ordersView" class="view">
-    <button class="link" id="backFromOrders">← Voltar</button>
-    <h2>Meus Pedidos</h2>
+    <button class="link" id="backFromOrders" aria-label="Voltar">← Voltar</button>
+    <h2 class="h2">Meus Pedidos</h2>
     <div id="ordersList" class="list"></div>
   </section>
 
   <!-- Suporte -->
   <section id="supportView" class="view">
-    <button class="link" id="backFromSupport">← Voltar</button>
-    <h2>Suporte</h2>
-    <div class="list">
+    <button class="link" id="backFromSupport" aria-label="Voltar">← Voltar</button>
+    <h2 class="h2">Suporte</h2>
+    <div class="list panel">
       <details><summary>Prazo de entrega</summary><p>Entre 2 e 10 dias úteis, conforme CEP.</p></details>
       <details><summary>Troca e devolução</summary><p>7 dias corridos após o recebimento (CDC).</p></details>
       <details><summary>Garantia</summary><p>Contra defeitos de fabricação por 90 dias.</p></details>
@@ -122,14 +146,18 @@
   </section>
 </main>
 
-<footer class="footer">
+<footer class="footer container" style="margin-top:12px;">
   <small>© World Retro • PWA protótipo</small>
 </footer>
 
+<!-- Registro do Service Worker (escopo relativo ao site) -->
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js');
+      navigator.serviceWorker
+        .register('./service-worker.js', { scope: './' })
+        .then(reg => console.log('SW registrado:', reg.scope))
+        .catch(err => console.error('Falha ao registrar SW:', err));
     });
   }
 </script>
