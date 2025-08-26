@@ -1,7 +1,7 @@
 {
   "name": "World Retro",
   "short_name": "WorldRetro",
-  "start_url": "/worldretro-pwa/",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#0b1020",
   "theme_color": "#111827",
