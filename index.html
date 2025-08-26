@@ -2,20 +2,14 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
-  <!-- Viewport com safe-areas (iOS) -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-
   <title>World Retro - Loja</title>
 
   <!-- PWA / Manifesto -->
   <link rel="manifest" href="./manifest.webmanifest">
 
   <!-- Favicon & ícones -->
-  <link rel="icon" href="./icons/favicon.png" sizes="any"> <!-- .ico -->
-  <!-- Se preferir PNGs, deixe também (opcional):
-  <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16.png">
-  -->
+  <link rel="icon" href="./icons/favicon.png" sizes="any">
   <link rel="apple-touch-icon" sizes="192x192" href="./icons/icon-192.png">
 
   <!-- Cores de tema (barra do mobile e splash) -->
@@ -29,9 +23,14 @@
 <body class="body-safe">
 <header class="topbar container">
   <div class="brand">
-    <span class="logo">🎮</span>
-    <h1>World Retro</h1>
+    <!-- 👇 Logo no lugar do emoji + texto -->
+    <a href="./" class="brand-link" aria-label="World Retro — início">
+      <img src="./icons/logo.png" alt="World Retro" class="brand-logo" height="40" decoding="async">
+    </a>
+    <!-- Mantém o H1 para SEO, mas oculto visualmente -->
+    <h1 class="sr-only">World Retro</h1>
   </div>
+
   <nav class="actions">
     <button id="navCatalog" class="btn">Catálogo</button>
     <button id="navOrders" class="btn">Meus Pedidos</button>
@@ -63,7 +62,6 @@
       </select>
     </div>
 
-    <!-- grid de produtos -->
     <div id="catalogGrid" class="grid products"></div>
   </section>
 
@@ -83,7 +81,6 @@
     <div class="panel shipping" style="margin-bottom:12px;">
       <label for="cepInput">Calcular frete (CEP)</label>
       <div class="row">
-        <!-- pattern correto em HTML: \d{5}-?\d{3} -->
         <input id="cepInput" class="input" placeholder="00000-000" inputmode="numeric" pattern="\d{5}-?\d{3}">
         <button id="calcFrete" class="btn">Calcular</button>
       </div>
@@ -155,7 +152,7 @@
   <small>© World Retro • PWA protótipo</small>
 </footer>
 
-<!-- Registro do Service Worker (ajustado p/ sw.js, conforme seus arquivos) -->
+<!-- Registro do Service Worker -->
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
