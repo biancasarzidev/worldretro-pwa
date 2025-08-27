@@ -42,8 +42,8 @@ html, body{
 
 /* Tipografia utilitária */
 .h1{ font-weight:800; line-height:1.1; font-size:clamp(24px,3.6vw,40px); }
-.h2{ font-weight:700; line-height:1.2; font-size:clamp(18px,2.8vw,28px); }
-.lead{ color:var(--muted); font-size:clamp(14px,2.6vw,18px); }
+.h2{ font-weight:700; line-height:1.2; font-size:clamp(20px,4.6vw,28px); }
+.lead{ color:var(--muted); font-size:clamp(15px,3.8vw,18px); }
 
 /* Painel padrão (cards/seções) */
 .panel{
@@ -67,7 +67,25 @@ html, body{
 }
 .brand{ display:flex; align-items:center; gap:8px; }
 .brand .logo{ font-size:22px; }
-.actions{ display:flex; gap:8px; flex-wrap:wrap; }
+
+/* Ações: 3 colunas (botões) + carrinho no mobile; volta a flex no desktop */
+.actions{ flex:1; }
+.topbar .actions{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0,1fr)) auto;
+  gap:10px;
+  align-items:center;
+}
+.topbar .actions .btn{ width:100%; }
+.topbar .actions .btn-cart{ width:auto; margin-left:auto; padding:10px 12px; }
+
+@media (min-width:780px){
+  .topbar .actions{
+    display:flex;
+    gap:8px;
+  }
+  .topbar .actions .btn{ width:auto; }
+}
 
 /* ==========================
    Controles (botões, inputs)
@@ -77,14 +95,28 @@ html, body{
   background:#111827;
   color:#e5e7eb;
   padding:12px 14px;
-  border-radius:12px;
+  border-radius:14px;
   cursor:pointer;
   font-weight:600;
+  min-height:44px;
+  font-size:clamp(14px,3.6vw,16px);
 }
 .btn:hover{ border-color:#4b5563; }
 .btn:active{ transform:translateY(1px); }
 .btn-primary{ background:var(--brand); border-color:transparent; color:#081017; }
 .btn-cart{ display:flex; align-items:center; gap:6px; }
+
+/* badge do carrinho */
+.btn-cart #cartCount{
+  display:inline-block;
+  min-width:1.6em;
+  padding:2px 8px;
+  border-radius:999px;
+  border:1px solid #2a3343;
+  background:#ffffff10;
+  font-weight:700;
+  text-align:center;
+}
 
 .input, select, textarea{
   background:#0f172a;
@@ -93,6 +125,8 @@ html, body{
   padding:12px 12px;
   border-radius:12px;
   min-width:0;
+  font-size:16px;     /* evita zoom no iOS */
+  min-height:44px;    /* alvo de toque confortável */
 }
 
 /* ==========================
@@ -102,7 +136,7 @@ html, body{
   background:linear-gradient(90deg,#1f2937,#0b1020);
   border:1px solid var(--border);
   border-radius:16px;
-  padding:18px;
+  padding:16px 18px;
   margin:12px 0;
 }
 
@@ -131,27 +165,30 @@ html, body{
   .products{ grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
 }
 
-/* Card de produto (compatível com seu JS que usa .card) */
+/* Card de produto */
 .card{
   background:var(--card);
   border:1px solid var(--border);
   border-radius:16px;
   padding:12px;
-  display:flex; flex-direction:column; gap:10px;
+  display:flex; flex-direction:column; gap:12px;
 }
 /* Capa do produto com aspect-ratio p/ evitar “buracos” */
 .card img,
 .product-cover{
   width:100%;
   height:auto;
-  aspect-ratio:16/10;      /* iOS 15+ */
+  aspect-ratio:16/10;
   object-fit:cover;
   border-radius:12px;
   background:#0a0f1a;
 }
 
-/* Preço, linhas e utilitários */
-.price{ font-weight:700; }
+/* Tipografia dos cards */
+.card strong{ font-size:clamp(14px,3.6vw,16px); }
+.price{ font-weight:700; font-size:clamp(15px,4vw,18px); }
+
+/* Utilitários */
 .row{ display:flex; gap:8px; align-items:center; }
 .row.end{ justify-content:flex-end; }
 .qtd{ display:inline-flex; gap:6px; align-items:center; }
@@ -194,7 +231,7 @@ html, body{
 /* ==========================
    Pequenos refinamentos
 ========================== */
-img{ display:block; } /* remove “gap” em torno de imagens inline */
+img{ display:block; } /* remove “gap” de imagens inline */
 details summary{ cursor:pointer; }
 details > *{ color:var(--ink); }
 
@@ -208,8 +245,9 @@ select:disabled{ opacity:.6; cursor:not-allowed; }
   outline-offset:2px;
 }
 
+/* Logo do header */
 .brand-link{ display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; }
-.brand-logo{ display:block; height:40px; width:auto; }
+.brand-logo{ display:block; height:clamp(36px,7vw,48px); width:auto; }
 
 /* Oculta visualmente, mas mantém para leitores de tela/SEO */
 .sr-only{
