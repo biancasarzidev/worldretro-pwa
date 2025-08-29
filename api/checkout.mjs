@@ -1,52 +1,74 @@
 // api/checkout.mjs
-import mercadopago from "mercadopago";
-
 export default async function handler(req, res) {
-  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
+  // --- CORS (permite chamada a partir do GitHub Pages) ---
+  const ALLOWED_ORIGINS = [
+    'https://biancasarzidev.github.io',           // seu GitHub Pages
+    'https://worldretro-pwa.vercel.app'           // seu backend na Vercel
+  ];
+  const origin = req.headers.origin || '';
+  const allowOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+
+  res.setHeader('Access-Control-Allow-Origin', allowOrigin);
+  res.setHeader('Vary', 'Origin');
+  res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.status(204).end();
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
   try {
+    const token = process.env.MP_ACCESS_TOKEN;
+    if (!token) return res.status(500).json({ error: 'MP_ACCESS_TOKEN missing' });
+
+    const FRONTEND_URL =
+      process.env.FRONTEND_URL || 'https://biancasarzidev.github.io/worldretro-pwa';
+    const API_BASE_URL =
+      process.env.API_BASE_URL || 'https://worldretro-pwa.vercel.app';
+
     const { order } = req.body || {};
-    if (!order || !order.items?.length) {
-      return res.status(400).json({ error: "Order inválido" });
+    if (!order || !Array.isArray(order.items)) {
+      return res.status(400).json({ error: 'Invalid payload: order/items missing' });
     }
 
-    // Configura credencial secreta
-    mercadopago.configure({ access_token: process.env.MP_ACCESS_TOKEN });
-
-    // Monta itens em formato MP
-    const items = order.items.map((it) => ({
-      id: String(it.id || it.sku || Date.now()),
-      title: String(it.name || "Produto"),
-      quantity: Number(it.qty || 1),
-      currency_id: "BRL",
-      unit_price: Number(it.price || 0)
-    }));
-
-    // URL do seu site (ajuste se usar domínio próprio)
-    const BASE_URL = process.env.PUBLIC_BASE_URL || "https://<seu-usuario>.github.io/<seu-repo>";
-
+    // Monta preferência pro Mercado Pago
     const preference = {
-      items,
+      items: order.items.map((i) => ({
+        title: i.name,
+        quantity: Number(i.qty),
+        currency_id: 'BRL',
+        unit_price: Number(i.price)
+      })),
       payer: {
-        name: order.customer?.nome,
-        email: order.customer?.email
+        email: order?.customer?.email || 'comprador-teste@example.com'
       },
       back_urls: {
-        success: `${BASE_URL}/?status=approved&oid=${order.id}`,
-        failure: `${BASE_URL}/?status=failure&oid=${order.id}`,
-        pending: `${BASE_URL}/?status=pending&oid=${order.id}`
+        success: `${FRONTEND_URL}/?status=approved&oid=${order.id}`,
+        pending: `${FRONTEND_URL}/?status=pending&oid=${order.id}`,
+        failure: `${FRONTEND_URL}/?status=failure&oid=${order.id}`
       },
-      auto_return: "approved",
-      notification_url: `${BASE_URL}/api/webhooks/mercado-pago`, // se usar domínio próprio em Vercel, troque pelo domínio de produção
-      metadata: { oid: order.id },
-      statement_descriptor: "WORLD RETRO",
-      external_reference: order.id
+      auto_return: 'approved',
+      notification_url: `${API_BASE_URL}/api/webhooks/mercado-pago`
     };
 
-    const mpRes = await mercadopago.preferences.create(preference);
-    return res.status(200).json({ init_point: mpRes.body.init_point, id: order.id });
+    const mpRes = await fetch('https://api.mercadopago.com/checkout/preferences', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(preference)
+    });
+
+    const data = await mpRes.json();
+    if (!mpRes.ok || !data.init_point) {
+      return res.status(400).json({ error: data.message || 'MP error', details: data });
+    }
+
+    return res.status(200).json({ id: data.id, init_point: data.init_point });
   } catch (err) {
-    console.error("checkout error:", err);
-    return res.status(500).json({ error: "Falha ao criar preferência" });
+    console.error('Checkout error:', err);
+    return res.status(500).json({ error: 'Internal error' });
   }
 }
