@@ -74,9 +74,13 @@ html, body{
 
 /* ======== NAV TABS (Catálogo / Pedidos / Suporte / Carrinho) ======== */
 .tabbar{
-  display:flex; gap:.75rem; padding:.5rem .75rem;
-  overflow-x:auto; -webkit-overflow-scrolling:touch;
+  display:flex;
+  gap:.75rem;
+  padding:.5rem .75rem;
+  flex-wrap:wrap;               /* <<< quebra de linha por padrão */
+  overflow-x:visible;           /* sem scroll lateral */
 }
+
 .tab{
   flex:0 0 auto;
   display:inline-flex; align-items:center; justify-content:center;
@@ -96,9 +100,15 @@ html, body{
 .tab:active{ transform:scale(.98); }
 .tab.is-active{ background:rgba(56,189,248,.08); border-color:rgba(56,189,248,.35); }
 
-/* Ícones sempre iguais */
+/* Ícones como texto (sem corte) */
 .tab .icon{
-  width:20px; height:20px; flex:0 0 20px; display:inline-block;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;  /* funciona com emoji ou SVG inline */
+  line-height:1;
+  width:auto;
+  height:auto;
 }
 
 /* Texto não vaza */
@@ -282,7 +292,29 @@ select:disabled{ opacity:.6; cursor:not-allowed; }
 
 /* ======== Responsividade ======== */
 @media (max-width:800px){
+  /* logo em cima, nav embaixo */
+  .topbar{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:10px;
+  }
+
+  .tabbar{
+    width:100%;
+    padding:0;
+    gap:.5rem;
+    flex-wrap:wrap;         /* garante quebra */
+    overflow-x:visible;     /* sem scroll lateral */
+    justify-content:flex-start;
+  }
+
+  .tab{
+    flex:1 1 calc(50% - .5rem);  /* 2 colunas */
+    min-width:140px;             /* evita pílulas minúsculas */
+  }
+
   .toolbar{ grid-template-columns:1fr; }
+
   /* garante mesma altura/consistência em telas pequenas */
   .tab{ padding:.6rem .9rem; }
   .tab .label{ max-width:14ch; }
