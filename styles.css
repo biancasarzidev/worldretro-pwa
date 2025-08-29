@@ -19,9 +19,8 @@ html, body{
   color:var(--ink);
   background:linear-gradient(180deg,#0b1020,#0a0f1a);
   font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;
-  /* Altura estável no iOS/Safari */
   min-height:100vh;
-  min-height:100dvh;
+  min-height:100dvh;                 /* iOS */
   -webkit-text-size-adjust:100%;
   -webkit-tap-highlight-color:transparent;
 }
@@ -65,19 +64,33 @@ html, body{
   padding:12px max(16px, env(safe-area-inset-right)) 12px max(16px, env(safe-area-inset-left));
   border-bottom:1px solid var(--border);
 }
-.brand{ display:flex; align-items:center; gap:8px; }
-.brand .logo{ font-size:22px; }
+.brand{ display:flex; align-items:center; gap:10px; }
 
 /* Logo do header */
 .brand-link{ display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; }
 .brand-logo{ display:block; height:clamp(36px,7vw,48px); width:auto; }
 
-/* ======== NAV TABS (Catálogo / Pedidos / Suporte / Carrinho) ======== */
+/* Wordmark “World Retro” (Audiowide + gradiente) */
+.brand h1{
+  margin:0;
+  font-family:"Audiowide", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-weight:400;
+  font-size:clamp(28px, 4.8vw, 46px);
+  line-height:1.1;
+  letter-spacing:.3px;
+  background:linear-gradient(90deg, #a78bfa 0%, #38bdf8 60%, #22d3ee 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  text-shadow:0 0 0 rgba(0,0,0,0), 0 10px 30px rgba(34,211,238,.15);
+}
+
+/* ======== NAV TABS ======== */
 .tabbar{
   display:flex;
   gap:.75rem;
   padding:.5rem .75rem;
-  flex-wrap:wrap;               /* quebra de linha por padrão */
+  flex-wrap:wrap;               /* quebra de linha */
   overflow-x:visible;           /* sem scroll lateral */
 }
 
@@ -92,7 +105,7 @@ html, body{
   border-radius:1.25rem;
   color:var(--ink);
   font-weight:700;
-  line-height:1;                  /* impede estourar a altura */
+  line-height:1;
   font-size:clamp(14px,3.5vw,16px);
   box-shadow:0 0 0 1px rgba(255,255,255,.02) inset;
   transition:transform .12s ease, background .12s ease, border-color .12s ease;
@@ -102,13 +115,10 @@ html, body{
 
 /* Ícones como texto (sem corte) */
 .tab .icon{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  font-size:18px;  /* funciona com emoji ou SVG inline */
+  display:inline-flex; align-items:center; justify-content:center;
+  font-size:18px;
   line-height:1;
-  width:auto;
-  height:auto;
+  width:auto; height:auto;
 }
 
 /* Texto não vaza */
@@ -116,7 +126,7 @@ html, body{
   max-width:16ch; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
 
-/* Carrinho com badge fixo, sem deformar a pílula */
+/* Carrinho com badge */
 .tab.cart{ position:relative; padding-right:2.25rem; }
 .tab.cart .badge{
   position:absolute; top:-6px; right:-6px;
@@ -124,7 +134,7 @@ html, body{
   display:grid; place-items:center;
   background:var(--accent); color:#001014;
   font-weight:800; font-size:12px;
-  border:2px solid #0b1020;     /* recorte sobre o topo blur */
+  border:2px solid #0b1020;
 }
 
 /* ==========================
@@ -170,71 +180,54 @@ html, body{
 }
 
 /* ==========================
-   Hero / banner / toolbar
+   HERO (banner responsivo)
 ========================== */
-
-/* --- HERO (novo) --- */
 .hero{
   position:relative;
   border:1px solid var(--border);
   border-radius:16px;
   overflow:hidden;
   margin:12px 0 16px;
-  background:linear-gradient(90deg,#1f2937,#0b1020); /* fallback se a imagem não carregar */
+  background:linear-gradient(90deg,#1f2937,#0b1020); /* fallback */
   min-height:clamp(160px, 28vw, 360px);
   box-shadow:0 1px 0 rgba(255,255,255,.03) inset, 0 12px 30px rgba(0,0,0,.25);
 }
 .hero-link{ display:block; color:inherit; text-decoration:none; height:100%; }
-
-.hero-media{
-  position:absolute; inset:0;
-}
+.hero-media{ position:absolute; inset:0; }
 .hero-media picture, .hero-media img{ width:100%; height:100%; display:block; object-fit:cover; }
-
 .hero-overlay{
   position:absolute; inset:0;
   background:
     radial-gradient(100% 60% at 15% 20%, rgba(0,0,0,.35) 0%, transparent 60%),
     linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.5));
 }
-
 /* Conteúdo sobreposto */
 .hero-content{
-  position:relative;
-  z-index:1;
-  display:flex;
-  align-items:flex-end;
-  justify-content:space-between;
-  gap:12px;
-  height:100%;
+  position:relative; z-index:1;
+  display:flex; align-items:flex-end; justify-content:space-between;
+  gap:12px; height:100%;
   padding:clamp(14px, 2.4vw, 22px);
 }
 .hero-title{
   margin:0 0 4px;
-  font-weight:800;
-  line-height:1.1;
+  font-weight:800; line-height:1.1;
   font-size:clamp(22px,3.6vw,36px);
   text-shadow:0 2px 12px rgba(0,0,0,.45);
 }
 .hero-sub{
-  margin:0;
-  color:var(--ink);
-  opacity:.9;
+  margin:0; color:var(--ink); opacity:.9;
   font-size:clamp(13px,2.8vw,18px);
   text-shadow:0 1px 8px rgba(0,0,0,.35);
 }
-
-/* Efeito leve no hover (desktop) */
 @media (hover:hover){
   .hero-media img{ transition:transform .6s ease; }
   .hero:hover .hero-media img{ transform:scale(1.03); }
 }
-/* Acessibilidade: respeita reduzir movimentos */
 @media (prefers-reduced-motion:reduce){
   .hero-media img{ transition:none !important; transform:none !important; }
 }
 
-/* Banner de texto padrão (continua) */
+/* Banner de texto padrão */
 .banner{
   background:linear-gradient(90deg,#1f2937,#0b1020);
   border:1px solid var(--border);
@@ -243,6 +236,7 @@ html, body{
   margin:12px 0;
 }
 
+/* Toolbar de filtros */
 .toolbar{
   display:grid;
   grid-template-columns:1fr 200px 220px;
@@ -256,7 +250,7 @@ html, body{
 ========================== */
 .grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; }
 
-/* Grid “oficial” para produtos (com breakpoints melhores) */
+/* Grid “oficial” p/ produtos (breakpoints melhores) */
 .products{ display:grid; gap:14px; }
 @media (min-width:640px){
   .products{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
@@ -273,7 +267,7 @@ html, body{
   padding:12px;
   display:flex; flex-direction:column; gap:12px;
 }
-/* Capa do produto com aspect-ratio p/ evitar “buracos” */
+/* Capa do produto com aspect-ratio */
 .card img,
 .product-cover{
   width:100%;
@@ -329,67 +323,9 @@ html, body{
 }
 
 /* ==========================
-   Pequenos refinamentos
-========================== */
-img{ display:block; } /* remove “gap” de imagens inline */
-details summary{ cursor:pointer; }
-details > *{ color:var(--ink); }
-
-button:disabled,
-input:disabled,
-select:disabled{ opacity:.6; cursor:not-allowed; }
-
-/* Melhor foco acessível */
-:focus-visible{
-  outline:2px solid var(--accent);
-  outline-offset:2px;
-}
-
-/* Oculta visualmente, mas mantém para leitores de tela/SEO */
-.sr-only{
-  position:absolute !important;
-  width:1px; height:1px;
-  padding:0; margin:-1px; overflow:hidden;
-  clip:rect(0 0 0 0); white-space:nowrap; border:0;
-}
-
-/* ======== Responsividade ======== */
-@media (max-width:800px){
-  /* logo em cima, nav embaixo */
-  .topbar{
-    flex-direction:column;
-    align-items:flex-start;
-    gap:10px;
-  }
-
-  .tabbar{
-    width:100%;
-    padding:0;
-    gap:.5rem;
-    flex-wrap:wrap;         /* garante quebra */
-    overflow-x:visible;     /* sem scroll lateral */
-    justify-content:flex-start;
-  }
-
-  .tab{
-    flex:1 1 calc(50% - .5rem);  /* 2 colunas */
-    min-width:140px;             /* evita pílulas minúsculas */
-  }
-
-  .toolbar{ grid-template-columns:1fr; }
-
-  /* garante mesma altura/consistência em telas pequenas */
-  .tab{ padding:.6rem .9rem; }
-  .tab .label{ max-width:14ch; }
-}
-
-/* ==========================
    Suporte / FAQ
 ========================== */
-.faq{
-  display:grid;
-  gap:12px;
-}
+.faq{ display:grid; gap:12px; }
 .faq details{
   background:var(--panel);
   border:1px solid var(--border);
@@ -410,19 +346,13 @@ select:disabled{ opacity:.6; cursor:not-allowed; }
   transition:transform .18s ease;
 }
 .faq details[open] summary::before{ transform:rotate(90deg); }
-.faq .faq-body{
-  padding:0 16px 16px;
-  color:var(--muted);
-}
+.faq .faq-body{ padding:0 16px 16px; color:var(--muted); }
 
 /* CTA do WhatsApp */
 .support-actions{
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-  margin-top:12px;
+  display:flex; flex-direction:column;
+  gap:8px; margin-top:12px;
 }
-
 .btn-whatsapp{
   display:flex; align-items:center; justify-content:center; gap:10px;
   background:linear-gradient(135deg,#25D366,#128C7E);
@@ -443,13 +373,63 @@ select:disabled{ opacity:.6; cursor:not-allowed; }
   box-shadow:0 14px 28px rgba(18,140,126,.33);
 }
 .btn-whatsapp:active{ transform:translateY(0); }
-
-.wa-icon{
-  width:20px; height:20px;
-  fill:currentColor;
-}
+.wa-icon{ width:20px; height:20px; fill:currentColor; }
 
 /* full-width no mobile */
 @media (max-width:800px){
   .btn-whatsapp{ width:100%; }
+}
+
+/* ==========================
+   Pequenos refinamentos
+========================== */
+img{ display:block; } /* remove “gap” de imagens inline */
+details summary{ cursor:pointer; }
+details > *{ color:var(--ink); }
+
+button:disabled,
+input:disabled,
+select:disabled{ opacity:.6; cursor:not-allowed; }
+
+:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:2px;
+}
+
+/* Oculta visualmente, mas mantém p/ leitores de tela/SEO */
+.sr-only{
+  position:absolute !important;
+  width:1px; height:1px;
+  padding:0; margin:-1px; overflow:hidden;
+  clip:rect(0 0 0 0); white-space:nowrap; border:0;
+}
+
+/* ==========================
+   Responsividade
+========================== */
+@media (max-width:800px){
+  /* logo em cima, nav embaixo */
+  .topbar{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:10px;
+  }
+
+  .tabbar{
+    width:100%;
+    padding:0;
+    gap:.5rem;
+    flex-wrap:wrap;
+    overflow-x:visible;
+    justify-content:flex-start;
+  }
+
+  .tab{
+    flex:1 1 calc(50% - .5rem);  /* 2 colunas */
+    min-width:140px;             /* evita pílulas minúsculas */
+    padding:.6rem .9rem;         /* altura consistente */
+  }
+  .tab .label{ max-width:14ch; }
+
+  .toolbar{ grid-template-columns:1fr; }
 }
