@@ -382,3 +382,74 @@ select:disabled{ opacity:.6; cursor:not-allowed; }
   .tab{ padding:.6rem .9rem; }
   .tab .label{ max-width:14ch; }
 }
+
+/* ==========================
+   Suporte / FAQ
+========================== */
+.faq{
+  display:grid;
+  gap:12px;
+}
+.faq details{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+}
+.faq summary{
+  list-style:none;
+  cursor:pointer;
+  padding:14px 16px;
+  display:flex; align-items:center; gap:10px;
+  font-weight:700;
+}
+.faq summary::-webkit-details-marker{ display:none; }
+.faq summary::before{
+  content:'▸';
+  opacity:.8;
+  transition:transform .18s ease;
+}
+.faq details[open] summary::before{ transform:rotate(90deg); }
+.faq .faq-body{
+  padding:0 16px 16px;
+  color:var(--muted);
+}
+
+/* CTA do WhatsApp */
+.support-actions{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-top:12px;
+}
+
+.btn-whatsapp{
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  background:linear-gradient(135deg,#25D366,#128C7E);
+  color:#02160f;
+  font-weight:800;
+  border:none;
+  min-height:48px;
+  padding:12px 16px;
+  border-radius:14px;
+  text-decoration:none;
+  box-shadow:0 10px 22px rgba(18,140,126,.25);
+  transition:transform .12s ease, filter .12s ease, box-shadow .12s ease;
+  width:fit-content;
+}
+.btn-whatsapp:hover{
+  filter:brightness(1.05);
+  transform:translateY(-1px);
+  box-shadow:0 14px 28px rgba(18,140,126,.33);
+}
+.btn-whatsapp:active{ transform:translateY(0); }
+
+.wa-icon{
+  width:20px; height:20px;
+  fill:currentColor;
+}
+
+/* full-width no mobile */
+@media (max-width:800px){
+  .btn-whatsapp{ width:100%; }
+}

@@ -202,15 +202,49 @@
 
   <!-- Suporte -->
   <section id="supportView" class="view" aria-labelledby="suporte-title">
-    <button class="link" id="backFromSupport" type="button" aria-label="Voltar">← Voltar</button>
-    <h2 id="suporte-title">Suporte</h2>
-    <div class="list">
-      <details><summary>Prazo de entrega</summary><p>Entre 2 e 10 dias úteis, conforme CEP.</p></details>
-      <details><summary>Troca e devolução</summary><p>7 dias corridos após o recebimento (CDC).</p></details>
-      <details><summary>Garantia</summary><p>Contra defeitos de fabricação por 90 dias.</p></details>
-    </div>
-    <a class="btn" href="https://wa.me/5500000000000" target="_blank" rel="noopener">Falar no WhatsApp</a>
-  </section>
+  <button class="link" id="backFromSupport" type="button" aria-label="Voltar">← Voltar</button>
+  <h2 id="suporte-title">Suporte</h2>
+
+  <!-- FAQ / Acordeões -->
+  <div class="faq">
+    <details class="faq-item">
+      <summary>Prazo de entrega</summary>
+      <div class="faq-body">
+        <p>Entre 2 e 10 dias úteis, conforme CEP.</p>
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary>Troca e devolução</summary>
+      <div class="faq-body">
+        <p>7 dias corridos após o recebimento (CDC).</p>
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary>Garantia</summary>
+      <div class="faq-body">
+        <p>Contra defeitos de fabricação por 90 dias.</p>
+      </div>
+    </details>
+  </div>
+
+  <!-- CTA WhatsApp -->
+  <div class="support-actions">
+    <a class="btn btn-whatsapp"
+       href="https://wa.me/5500000000000?text=Ol%C3%A1%2C%20preciso%20de%20ajuda%20com%20um%20pedido."
+       target="_blank" rel="noopener">
+      <!-- ícone WhatsApp -->
+      <svg class="wa-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M20.52 3.48A11.78 11.78 0 0012.05 0 11.94 11.94 0 001.5 17.5L0 24l6.68-1.75A11.9 11.9 0 0012 24h.05A11.94 11.94 0 0024 12a11.8 11.8 0 00-3.48-8.52zM12.05 22a9.9 9.9 0 01-5.05-1.39l-.36-.21-3.96 1.03 1.06-3.86-.23-.4A9.9 9.9 0 1122 12 9.94 9.94 0 0112.05 22z"/>
+        <path d="M17.27 14.37c-.29-.15-1.72-.85-1.99-.95-.27-.1-.47-.15-.67.15s-.77.95-.95 1.14-.35.22-.64.07a8.1 8.1 0 01-2.38-1.47 8.94 8.94 0 01-1.65-2.05c-.17-.29 0-.45.13-.6.13-.13.29-.35.43-.52a2 2 0 00.29-.49.55.55 0 000-.52c0-.15-.66-1.6-.91-2.2-.24-.58-.49-.5-.67-.5h-.57a1.1 1.1 0 00-.8.37c-.27.3-1.04 1.02-1.04 2.49s1.07 2.88 1.22 3.08 2.1 3.2 5.09 4.48c.71.31 1.27.5 1.7.64a4.07 4.07 0 001.87.12 3.05 3.05 0 002.02-1.42 2.53 2.53 0 00.17-1.5c-.07-.12-.26-.2-.55-.35z"/>
+      </svg>
+      Falar no WhatsApp
+    </a>
+    <small class="muted">Atendimento de seg a sex, 9h–18h.</small>
+  </div>
+</section>
+
 </main>
 
 <footer class="footer container" style="margin-top:12px;">
