@@ -13,89 +13,114 @@
 <body>
 <header class="topbar">
   <div class="brand">
-    <span class="logo">🎮</span>
+    <span class="logo" aria-hidden="true">🎮</span>
     <h1>World Retro</h1>
   </div>
-  <nav class="actions">
-    <button id="navCatalog" class="btn">Catálogo</button>
-    <button id="navOrders" class="btn">Meus Pedidos</button>
-    <button id="navSupport" class="btn">Suporte</button>
-    <button id="openCart" class="btn btn-cart">🛒 <span id="cartCount">0</span></button>
+
+  <!-- NAV TABS -->
+  <nav class="tabbar" aria-label="Navegação principal">
+    <button id="navCatalog" class="tab is-active" type="button">
+      <span class="icon" aria-hidden="true">📚</span>
+      <span class="label">Catálogo</span>
+    </button>
+
+    <button id="navOrders" class="tab" type="button">
+      <span class="icon" aria-hidden="true">📦</span>
+      <span class="label">Meus Pedidos</span>
+    </button>
+
+    <button id="navSupport" class="tab" type="button">
+      <span class="icon" aria-hidden="true">💬</span>
+      <span class="label">Suporte</span>
+    </button>
+
+    <button id="openCart" class="tab cart" type="button" aria-label="Abrir carrinho">
+      <span class="icon" aria-hidden="true">🛒</span>
+      <span class="badge" id="cartCount">0</span>
+    </button>
   </nav>
 </header>
 
 <main id="app" class="container">
   <!-- Home / catálogo -->
-  <section id="catalogView" class="view active">
+  <section id="catalogView" class="view active" aria-labelledby="catalogo-title">
     <div class="banner">
-      <h2>Lançamentos & Promoções</h2>
+      <h2 id="catalogo-title">Lançamentos & Promoções</h2>
       <p>Nostalgia de verdade. Mídia negra diamante, manual colorido e case lacrada.</p>
     </div>
+
     <div class="toolbar">
-      <input id="searchInput" class="input" placeholder="Buscar jogo ou console..." />
-      <select id="filterConsole" class="input">
+      <input id="searchInput" class="input" placeholder="Buscar jogo ou console..." aria-label="Buscar produto" />
+      <select id="filterConsole" class="input" aria-label="Filtrar por console">
         <option value="">Todos os consoles</option>
       </select>
-      <select id="sortSelect" class="input">
+      <select id="sortSelect" class="input" aria-label="Ordenar por">
         <option value="relevance">Relevância</option>
         <option value="priceAsc">Preço: menor → maior</option>
         <option value="priceDesc">Preço: maior → menor</option>
         <option value="nameAsc">Nome: A → Z</option>
       </select>
     </div>
+
     <div id="catalogGrid" class="grid"></div>
   </section>
 
   <!-- Detalhe do produto -->
-  <section id="productView" class="view">
-    <button class="link" id="backToCatalog">← Voltar</button>
+  <section id="productView" class="view" aria-labelledby="produto-title">
+    <button class="link" id="backToCatalog" type="button">← Voltar</button>
+    <h2 id="produto-title" class="visually-hidden">Detalhe do produto</h2>
     <div id="productDetail"></div>
   </section>
 
   <!-- Carrinho -->
-  <section id="cartView" class="view">
-    <button class="link" id="backFromCart">← Voltar</button>
-    <h2>Seu Carrinho</h2>
+  <section id="cartView" class="view" aria-labelledby="carrinho-title">
+    <button class="link" id="backFromCart" type="button">← Voltar</button>
+    <h2 id="carrinho-title">Seu Carrinho</h2>
     <div id="cartItems"></div>
+
     <div class="shipping">
       <label for="cepInput">Calcular frete (CEP)</label>
       <div class="row">
-        <input id="cepInput" class="input" placeholder="00000-000">
-        <button id="calcFrete" class="btn">Calcular</button>
+        <input id="cepInput" class="input" placeholder="00000-000" inputmode="numeric" pattern="[0-9\-]*">
+        <button id="calcFrete" class="btn" type="button">Calcular</button>
       </div>
       <div id="freteResult" class="muted"></div>
     </div>
+
     <div id="cartTotals" class="totals"></div>
     <div class="row end">
-      <button id="goCheckout" class="btn btn-primary">Finalizar Pedido</button>
+      <button id="goCheckout" class="btn btn-primary" type="button">Finalizar Pedido</button>
     </div>
   </section>
 
   <!-- Checkout -->
-  <section id="checkoutView" class="view">
-    <button class="link" id="backFromCheckout">← Voltar</button>
-    <h2>Checkout</h2>
-    <form id="checkoutForm" class="form">
+  <section id="checkoutView" class="view" aria-labelledby="checkout-title">
+    <button class="link" id="backFromCheckout" type="button">← Voltar</button>
+    <h2 id="checkout-title">Checkout</h2>
+    <form id="checkoutForm" class="form" novalidate>
       <fieldset>
         <legend>Dados do Cliente</legend>
         <input class="input" name="nome" placeholder="Nome completo" required>
         <input class="input" name="email" type="email" placeholder="Email" required>
-        <input class="input" name="telefone" placeholder="WhatsApp (opcional)">
+        <input class="input" name="telefone" placeholder="WhatsApp (opcional)" inputmode="tel">
       </fieldset>
+
       <fieldset>
         <legend>Endereço de Entrega</legend>
-        <input class="input" name="cep" placeholder="CEP" required>
+        <input class="input" name="cep" placeholder="CEP" required inputmode="numeric" pattern="[0-9\-]*">
         <input class="input" name="endereco" placeholder="Rua e número" required>
         <input class="input" name="bairro" placeholder="Bairro" required>
         <input class="input" name="cidade" placeholder="Cidade" required>
-        <input class="input" name="estado" placeholder="UF" required maxlength="2">
+        <input class="input" name="estado" placeholder="UF" required maxlength="2" style="text-transform:uppercase">
       </fieldset>
+
       <fieldset>
         <legend>Pagamento</legend>
         <label class="row"><input type="radio" name="pagamento" value="pix" checked> Pix</label>
         <label class="row"><input type="radio" name="pagamento" value="cartao"> Cartão de crédito/débito</label>
         <label class="row"><input type="radio" name="pagamento" value="boleto"> Boleto</label>
       </fieldset>
+
       <div id="checkoutSummary" class="totals"></div>
       <button class="btn btn-primary" type="submit">Confirmar Compra</button>
     </form>
@@ -103,16 +128,16 @@
   </section>
 
   <!-- Pedidos -->
-  <section id="ordersView" class="view">
-    <button class="link" id="backFromOrders">← Voltar</button>
-    <h2>Meus Pedidos</h2>
+  <section id="ordersView" class="view" aria-labelledby="pedidos-title">
+    <button class="link" id="backFromOrders" type="button">← Voltar</button>
+    <h2 id="pedidos-title">Meus Pedidos</h2>
     <div id="ordersList" class="list"></div>
   </section>
 
   <!-- Suporte -->
-  <section id="supportView" class="view">
-    <button class="link" id="backFromSupport">← Voltar</button>
-    <h2>Suporte</h2>
+  <section id="supportView" class="view" aria-labelledby="suporte-title">
+    <button class="link" id="backFromSupport" type="button">← Voltar</button>
+    <h2 id="suporte-title">Suporte</h2>
     <div class="list">
       <details><summary>Prazo de entrega</summary><p>Entre 2 e 10 dias úteis, conforme CEP.</p></details>
       <details><summary>Troca e devolução</summary><p>7 dias corridos após o recebimento (CDC).</p></details>
@@ -129,7 +154,7 @@
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js');
+      navigator.serviceWorker.register('./sw.js'); // relativo p/ GitHub Pages
     });
   }
 </script>
