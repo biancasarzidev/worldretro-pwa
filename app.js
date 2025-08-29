@@ -1,24 +1,36 @@
-// World Retro PWA Prototype - Cart, Catalog, Checkout (refinado)
-const LS = {
-  cart: 'wr_cart',
-  orders: 'wr_orders',
-  ui: 'wr_ui'
+// World Retro PWA - Cart, Catalog, Checkout (real + fallback)
+
+/* =========================
+   Config
+========================= */
+const CONFIG = {
+  API_BASE: (typeof window !== 'undefined' && window.API_BASE) ? window.API_BASE.replace(/\/$/, '') : '', // '' => relativo ./api
+  USE_REAL_CHECKOUT: true   // se a API não existir/der erro, cai no fallback protótipo automaticamente
 };
+
+/* =========================
+   LocalStorage keys & state
+========================= */
+const LS = { cart:'wr_cart', orders:'wr_orders', ui:'wr_ui', shipping:'wr_shipping' };
 
 const state = {
   products: [],
   cart: JSON.parse(localStorage.getItem(LS.cart) || '[]'),
-  freight: { value: 0, label: '' },
+  freight: JSON.parse(localStorage.getItem(LS.shipping) || '{"value":0,"label":""}'),
   orders: JSON.parse(localStorage.getItem(LS.orders) || '[]'),
   ui: JSON.parse(localStorage.getItem(LS.ui) || '{"q":"","console":"","sort":"relevance"}')
 };
 
+/* =========================
+   Helpers
+========================= */
 const $ = (id) => document.getElementById(id);
 const money = (v) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
 function saveCart(){ localStorage.setItem(LS.cart, JSON.stringify(state.cart)); updateCartCount(); }
 function saveOrders(){ localStorage.setItem(LS.orders, JSON.stringify(state.orders)); }
 function saveUI(){ localStorage.setItem(LS.ui, JSON.stringify(state.ui)); }
+function saveFreight(){ localStorage.setItem(LS.shipping, JSON.stringify(state.freight)); }
 
 function updateCartCount(){
   const n = state.cart.reduce((s,i)=>s + (i.qtd||0), 0);
@@ -31,33 +43,42 @@ function route(viewId){
   const view = $(viewId);
   if (view) view.classList.add('active');
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  // marca aba ativa (se existirem)
+  const tabMap = { catalogView:'navCatalog', ordersView:'navOrders', supportView:'navSupport', cartView:'openCart' };
+  const activeBtnId = tabMap[viewId];
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('is-active'));
+  if (activeBtnId) document.getElementById(activeBtnId)?.classList.add('is-active');
 }
 
-/* ---------- FRETE (regra simples) ---------- */
+/* =========================
+   Frete (regra simples)
+========================= */
 // Base: R$22,90 + R$5 por item adicional. Grátis >= R$300.
 function calcFrete(cep){
   const total = state.cart.reduce((s,i)=>s+i.price*i.qtd,0);
   if(total >= 300){
     state.freight = { value: 0, label: 'Frete grátis (pedidos acima de R$ 300,00)' };
+    saveFreight();
     return;
   }
   const qty = state.cart.reduce((s,i)=>s+i.qtd,0);
   const val = 22.90 + Math.max(0, qty-1)*5;
   const label = `Padrão (${(cep||'').trim() || 'CEP não informado'})`;
   state.freight = { value: Number(val.toFixed(2)), label };
+  saveFreight();
 }
 
-/* ---------- PRODUCTS ---------- */
+/* =========================
+   Products
+========================= */
 async function loadProducts(){
   try {
-    // O SW já faz network-first p/ products.json; aqui só tratamos erros.
     const res = await fetch('./products.json', { cache: 'no-store' });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     state.products = await res.json();
   } catch (err) {
     console.error('Falha ao carregar products.json', err);
     state.products = state.products || [];
-    // aviso suave no topo do catálogo
     showCatalogNotice('Você está offline ou ocorreu um erro ao atualizar o catálogo. Exibindo versões em cache (se houver).');
   }
   buildConsoleFilter();
@@ -66,7 +87,6 @@ async function loadProducts(){
 }
 
 function showCatalogNotice(msg){
-  // cria/atualiza um aviso discreto no banner do catálogo
   const catalog = $('catalogView');
   if (!catalog) return;
   let note = catalog.querySelector('[data-note]');
@@ -84,7 +104,6 @@ function showCatalogNotice(msg){
 function buildConsoleFilter(){
   const sel = $('filterConsole');
   if (!sel) return;
-  // limpa e reconstroi mantendo a 1ª opção
   sel.innerHTML = '<option value="">Todos os consoles</option>';
   const consoles = [...new Set(state.products.map(p=>p.console))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
   consoles.forEach(c=>{
@@ -101,7 +120,9 @@ function restoreUIControls(){
   if (ss) ss.value = state.ui.sort || 'relevance';
 }
 
-/* ---------- RENDER CATALOG ---------- */
+/* =========================
+   Render Catalog
+========================= */
 const PLACEHOLDER = './img/placeholder.jpg';
 
 function createCard(p){
@@ -118,11 +139,9 @@ function createCard(p){
   card.appendChild(img);
 
   const titleWrap = document.createElement('div');
-  const strong = document.createElement('strong');
-  strong.textContent = p.name;
+  const strong = document.createElement('strong'); strong.textContent = p.name;
   const br = document.createElement('br');
-  const small = document.createElement('small');
-  small.textContent = p.console;
+  const small = document.createElement('small'); small.textContent = p.console;
   titleWrap.append(strong, br, small);
   card.appendChild(titleWrap);
 
@@ -160,7 +179,7 @@ function renderCatalog(){
   const filterConsole = $('filterConsole')?.value || '';
   const sortBy = $('sortSelect')?.value || 'relevance';
 
-  state.ui = { q, console: filterConsole, sort: sortBy }; // persist UI
+  state.ui = { q, console: filterConsole, sort: sortBy };
   saveUI();
 
   let items = state.products.filter(p =>
@@ -189,12 +208,14 @@ function renderCatalog(){
   grid.appendChild(frag);
 }
 
-/* Debounce leve para inputs (suave no mobile) */
+/* Debounce leve */
 function debounce(fn, ms=120){
   let t; return (...args)=>{ clearTimeout(t); t = setTimeout(()=>fn(...args), ms); };
 }
 
-/* ---------- PRODUCT DETAIL ---------- */
+/* =========================
+   Product detail
+========================= */
 function openProduct(id){
   const p = state.products.find(x=>x.id===id);
   if (!p) return;
@@ -202,7 +223,7 @@ function openProduct(id){
   const el = $('productDetail');
   if (!el) return;
 
-  el.innerHTML = ''; // limpa
+  el.innerHTML = '';
   const card = document.createElement('article');
   card.className = 'card';
 
@@ -244,11 +265,7 @@ function openProduct(id){
   const calc = document.createElement('button'); calc.id = 'calcDetail'; calc.className = 'btn'; calc.textContent = 'Calcular';
   const out = document.createElement('div'); out.id = 'freteDetail'; out.className = 'muted';
 
-  calc.onclick = ()=>{
-    const val = cep.value.trim();
-    calcFrete(val);
-    out.textContent = `${state.freight.label}: ${money(state.freight.value)}`;
-  };
+  calc.onclick = ()=>{ const val = cep.value.trim(); calcFrete(val); out.textContent = `${state.freight.label}: ${money(state.freight.value)}`; };
 
   row2.append(cep, calc);
   shipping.append(lab, row2, out);
@@ -259,7 +276,9 @@ function openProduct(id){
   route('productView');
 }
 
-/* ---------- CART ---------- */
+/* =========================
+   Cart
+========================= */
 function addToCart(p, qtd){
   const idx = state.cart.findIndex(i=>i.id===p.id);
   if(idx>-1){ state.cart[idx].qtd += qtd; }
@@ -310,27 +329,85 @@ function goCheckout(){
   route('checkoutView');
 }
 
-function placeOrder(formData){
+/* =========================
+   Checkout (real + fallback)
+========================= */
+function buildOrderFromForm(fd){
   const subtotal = state.cart.reduce((s,i)=>s+i.price*i.qtd,0);
   const total = subtotal + state.freight.value;
-  const order = {
-    id: 'WR-' + Date.now(),
-    items: state.cart.map(i=>({name:i.name, price:i.price, qtd:i.qtd})),
+
+  return {
+    id: 'WR-' + Date.now().toString(36).toUpperCase(),
+    items: state.cart.map(i=>({ id:i.id, name:i.name, price:Number(i.price), qty:Number(i.qtd) })),
     freight: state.freight,
     totals: { subtotal, total },
     customer: {
-      nome: formData.get('nome'),
-      email: formData.get('email'),
-      telefone: formData.get('telefone')||'',
+      nome: fd.get('nome'),
+      email: fd.get('email'),
+      telefone: fd.get('telefone')||'',
       endereco: {
-        cep: formData.get('cep'), endereco: formData.get('endereco'),
-        bairro: formData.get('bairro'), cidade: formData.get('cidade'), estado: formData.get('estado')
+        cep: fd.get('cep'), endereco: fd.get('endereco'),
+        bairro: fd.get('bairro'), cidade: fd.get('cidade'), estado: String(fd.get('estado')||'').toUpperCase()
       },
     },
-    payment: formData.get('pagamento'),
-    status: 'Pagamento pendente',
+    payment: fd.get('pagamento'),
+    status: 'aguardando_pagamento',
     createdAt: new Date().toISOString(),
   };
+}
+
+async function startRealCheckout(order){
+  // monta URL da API (relativa ou absoluta)
+  const url = (CONFIG.API_BASE ? CONFIG.API_BASE : '') + '/api/checkout';
+  const res = await fetch(url, {
+    method:'POST',
+    headers:{ 'Content-Type':'application/json' },
+    body: JSON.stringify({ order })
+  });
+  const json = await res.json();
+  if (!res.ok || !json.init_point) throw new Error(json.error || 'Falha ao iniciar pagamento');
+  // redireciona para o Mercado Pago
+  window.location.href = json.init_point;
+}
+
+function handleGatewayReturn(){
+  const qs = new URLSearchParams(location.search);
+  const status = qs.get('status');  // approved | pending | failure
+  const oid = qs.get('oid');
+  if (!status || !oid) return;
+
+  // atualiza pedido salvo localmente
+  const idx = state.orders.findIndex(o => o.id === oid);
+  if (idx >= 0){
+    state.orders[idx].status =
+      status === 'approved' ? 'pago' :
+      status === 'pending'  ? 'pendente' :
+      'falhou';
+    saveOrders();
+  }
+
+  if (status === 'approved'){
+    state.cart = []; saveCart();
+    localStorage.removeItem(LS.shipping);
+    alert('Pagamento aprovado! Pedido ' + oid + ' confirmado.');
+    renderOrders();
+    route('ordersView');
+  } else if (status === 'pending'){
+    alert('Pagamento pendente. Aguardando confirmação do Mercado Pago.');
+    renderOrders();
+    route('ordersView');
+  } else {
+    alert('Pagamento não concluído.');
+  }
+
+  // limpa querystring
+  history.replaceState({}, document.title, location.pathname);
+}
+
+/* ---------- Protótipo (fallback) ---------- */
+function placeOrderPrototype(fd){
+  const order = buildOrderFromForm(fd);
+  order.status = 'Pagamento pendente (protótipo)';
   state.orders.unshift(order);
   saveOrders();
   state.cart = []; saveCart();
@@ -339,6 +416,9 @@ function placeOrder(formData){
   route('ordersView');
 }
 
+/* =========================
+   Orders render
+========================= */
 function renderOrders(){
   const box = $('ordersList');
   if (!box) return;
@@ -367,8 +447,11 @@ function renderOrders(){
   });
 }
 
-/* ---------- EVENTS ---------- */
+/* =========================
+   Events
+========================= */
 window.addEventListener('DOMContentLoaded', async ()=>{
+
   // nav
   $('navCatalog').onclick = ()=>route('catalogView');
   $('navOrders').onclick = ()=>{ renderOrders(); route('ordersView'); };
@@ -392,10 +475,35 @@ window.addEventListener('DOMContentLoaded', async ()=>{
 
   // checkout
   $('goCheckout').onclick = ()=>goCheckout();
-  $('checkoutForm').addEventListener('submit', (e)=>{
+  $('checkoutForm').addEventListener('submit', async (e)=>{
     e.preventDefault();
     const fd = new FormData(e.target);
-    placeOrder(fd);
+
+    // validações rápidas
+    const required = ['nome','email','cep','endereco','bairro','cidade','estado','pagamento'];
+    const missing = required.filter(k => !String(fd.get(k)||'').trim());
+    if (missing.length){ alert('Preencha: ' + missing.join(', ')); return; }
+    if (!state.cart.length){ alert('Carrinho vazio.'); return; }
+
+    const order = buildOrderFromForm(fd);
+
+    // salva rascunho para mostrar ao voltar do MP
+    state.orders.unshift(order);
+    saveOrders();
+
+    if (!CONFIG.USE_REAL_CHECKOUT){
+      // modo protótipo explícito
+      placeOrderPrototype(fd);
+      return;
+    }
+
+    try{
+      await startRealCheckout(order); // redireciona para o MP
+    }catch(err){
+      console.error('Checkout real falhou, usando fallback:', err);
+      alert('Não foi possível iniciar o pagamento agora. Vou criar o pedido em modo protótipo.');
+      placeOrderPrototype(fd);
+    }
   });
 
   // filtros catálogo (com debounce)
@@ -405,7 +513,6 @@ window.addEventListener('DOMContentLoaded', async ()=>{
     if (!el) return;
     const ev = (id === 'searchInput') ? 'input' : 'change';
     el.addEventListener(ev, ()=>{
-      // atualiza state.ui já que restoreUIControls pode chamar depois
       if (id === 'searchInput') state.ui.q = el.value;
       if (id === 'filterConsole') state.ui.console = el.value;
       if (id === 'sortSelect') state.ui.sort = el.value;
@@ -414,6 +521,10 @@ window.addEventListener('DOMContentLoaded', async ()=>{
     });
   });
 
+  // contadores + catálogo
   updateCartCount();
-  await loadProducts(); // carrega + renderCatalog()
+  await loadProducts();
+
+  // trata retorno do gateway (?status=&oid=)
+  handleGatewayReturn();
 });
