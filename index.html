@@ -82,7 +82,7 @@
   <!-- Detalhe do produto -->
   <section id="productView" class="view" aria-labelledby="produto-title">
     <button class="link" id="backToCatalog" type="button" aria-label="Voltar para o catálogo">← Voltar</button>
-    <h2 id="produto-title" class="visually-hidden">Detalhe do produto</h2>
+    <h2 id="produto-title" class="sr-only">Detalhe do produto</h2>
     <div id="productDetail"></div>
   </section>
 
@@ -177,5 +177,9 @@
     });
   }
 </script>
+
+<script>window.API_BASE = "https://worldretro-pwa.vercel.app";</script>
+<script defer src="./app.js?v=7"></script>
+
 </body>
 </html>

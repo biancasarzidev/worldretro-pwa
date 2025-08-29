@@ -4,8 +4,9 @@
    Config
 ========================= */
 const CONFIG = {
-  API_BASE: (typeof window !== 'undefined' && window.API_BASE) ? window.API_BASE.replace(/\/$/, '') : '', // '' => relativo ./api
-  USE_REAL_CHECKOUT: true   // se a API não existir/der erro, cai no fallback protótipo automaticamente
+  API_BASE: (typeof window !== 'undefined' && window.API_BASE)
+              ? window.API_BASE.replace(/\/$/, '') : '',
+  USE_REAL_CHECKOUT: false   // força modo protótipo
 };
 
 /* =========================
