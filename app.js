@@ -108,6 +108,112 @@ function route(viewId) {
 }
 
 /* =========================
+   CEP: auto-preenchimento via ViaCEP
+========================= */
+function onlyDigits(s){ return String(s||'').replace(/\D/g,''); }
+
+async function fetchViaCEP(cepRaw){
+  const cep = onlyDigits(cepRaw);
+  if (cep.length !== 8) throw new Error('CEP inválido');
+  const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+  if (!res.ok) throw new Error('Falha de rede');
+  const data = await res.json();
+  if (data.erro) throw new Error('CEP não encontrado');
+  return {
+    street: data.logradouro || '',
+    neighborhood: data.bairro || '',
+    city: data.localidade || '',
+    state: (data.uf || '').toUpperCase(),
+  };
+}
+
+function ensureCepHint(){
+  const form = $('checkoutForm');
+  if (!form) return null;
+  let hint = form.querySelector('#cepHint');
+  if (!hint){
+    hint = document.createElement('small');
+    hint.id = 'cepHint';
+    hint.className = 'muted';
+    hint.setAttribute('aria-live','polite');
+    form.elements['cep'].insertAdjacentElement('afterend', hint);
+  }
+  return hint;
+}
+
+/* Atualiza o resumo do checkout (igual ao do carrinho) */
+function refreshCheckoutTotals(){
+  const subtotal = state.cart.reduce((s,i)=>s+i.price*i.qtd,0);
+  const total = subtotal + state.freight.value;
+  $('checkoutSummary').innerHTML =
+    `<div>Subtotal: <strong>${money(subtotal)}</strong></div>
+     <div>Frete: <strong>${money(state.freight.value)}</strong> <small class="muted">(${state.freight.label||'Calcule pelo CEP'})</small></div>
+     <div style="font-size:1.1rem">TOTAL: <strong>${money(total)}</strong></div>`;
+}
+
+/* Liga o auto-preenchimento no campo CEP do checkout */
+function setupCepAutofill(){
+  const form = $('checkoutForm');
+  if (!form) return;
+
+  const cepEl = form.elements['cep'];
+  if (!cepEl || cepEl._hasCepListener) return; // evita duplicar
+  const hint = ensureCepHint();
+
+  // --- MÁSCARA DE CEP (00000-000) ---
+  function onlyDigits(s){ return String(s||'').replace(/\D/g,''); }
+  function maskCep(v){
+    v = onlyDigits(v).slice(0, 8);
+    return v.length > 5 ? v.slice(0,5) + '-' + v.slice(5) : v;
+  }
+  // roda ANTES do debounce pra já formatar o campo
+  cepEl.addEventListener('input', () => {
+    cepEl.value = maskCep(cepEl.value);
+    // opcional: cursor no fim (bom no mobile)
+    try { cepEl.setSelectionRange(cepEl.value.length, cepEl.value.length); } catch(_) {}
+  }, { passive: true });
+
+  // --- Debounce que consulta o ViaCEP e preenche endereço ---
+  const run = debounce(async ()=>{
+    const digits = onlyDigits(cepEl.value);
+    if (digits.length !== 8){ if (hint) hint.textContent=''; return; }
+
+    try{
+      if (hint) hint.textContent = 'Buscando endereço...';
+      const addr = await fetchViaCEP(digits);  // usa sua fetchViaCEP já criada
+
+      if (addr.street && !form.elements['endereco'].value)     form.elements['endereco'].value   = addr.street;
+      if (addr.neighborhood && !form.elements['bairro'].value) form.elements['bairro'].value     = addr.neighborhood;
+      if (addr.city && !form.elements['cidade'].value)          form.elements['cidade'].value     = addr.city;
+      if (addr.state)                                           form.elements['estado'].value     = addr.state;
+
+      // recalcula frete e atualiza resumo
+      calcFrete(digits);
+      refreshCheckoutTotals();          // usa sua função de resumo
+
+      if (hint) hint.textContent = 'Endereço preenchido automaticamente.';
+    }catch(e){
+      if (hint) hint.textContent = 'CEP não encontrado.';
+    }
+  }, 250);
+
+  // Listeners que disparam a busca ao digitar/sair do campo
+  cepEl.addEventListener('input', run);
+  cepEl.addEventListener('blur', run);
+
+  cepEl._hasCepListener = true;
+}
+
+setupCepAutofill();
+
+function goCheckout(){
+  $('checkoutSummary').innerHTML = $('cartTotals').innerHTML;
+  route('checkoutView');
+  setupCepAutofill(); // garante o listener no campo CEP
+}
+
+
+/* =========================
    Frete (regra simples)
 ========================= */
 // Base: R$22,90 + R$5 por item adicional. Grátis >= R$300.
