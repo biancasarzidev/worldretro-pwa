@@ -4,7 +4,7 @@
     "name": "Resident Evil 3",
     "console": "PS1",
     "price": 89.9,
-    "image": "",
+    "image": "./img/resi.png",
     "description": "Mídia negra diamante A, manual colorido, case acrílica lacrada."
   },
   {
@@ -12,7 +12,7 @@
     "name": "Marvel vs. Capcom",
     "console": "Dreamcast",
     "price": 99.9,
-    "image": "",
+    "image": "./img/marvel.png",
     "description": "Metalização full, leitura estável e nostalgia autêntica."
   },
   {
@@ -20,7 +20,7 @@
     "name": "Final Fantasy VIII",
     "console": "PS1",
     "price": 119.9,
-    "image": "",
+    "image": "./img/final.png",
     "description": "Prensagem industrial, mídia premium e acabamento de fábrica."
   },
   {
@@ -28,7 +28,7 @@
     "name": "Sega Rally",
     "console": "Sega Saturn",
     "price": 79.9,
-    "image": "",
+    "image": "./img/sega.png",
     "description": "Case acrílica lacrada e manual oficial colorido."
   }
 ]

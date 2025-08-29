@@ -2,18 +2,32 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>World Retro - Loja</title>
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" type="image/png" href="icons/icon-192.png">
-  <meta name="theme-color" content="#111827">
-  <link rel="stylesheet" href="styles.css">
-  <script defer src="app.js"></script>
+
+  <!-- PWA / Manifesto -->
+  <link rel="manifest" href="./manifest.webmanifest">
+
+  <!-- Favicon & ícones -->
+  <link rel="icon" href="./icons/favicon.png" sizes="any">
+  <link rel="apple-touch-icon" sizes="192x192" href="./icons/icon-192.png">
+
+  <!-- Cores de tema (barra do mobile e splash) -->
+  <meta name="theme-color" content="#0f172a">
+
+  <!-- Estilos e App -->
+  <link rel="stylesheet" href="./styles.css">
+  <script defer src="./app.js"></script>
 </head>
-<body>
-<header class="topbar">
+
+<body class="body-safe">
+<header class="topbar container">
   <div class="brand">
-    <span class="logo" aria-hidden="true">🎮</span>
+    <!-- Logo como imagem -->
+    <a href="./" class="brand-link" aria-label="World Retro — início">
+      <img src="./icons/logo.png" alt="World Retro" class="brand-logo" height="40" decoding="async">
+    </a>
+    <!-- Mantém H1 para SEO (oculto visualmente se desejar estilizar como .sr-only no CSS) -->
     <h1>World Retro</h1>
   </div>
 
@@ -36,20 +50,20 @@
 
     <button id="openCart" class="tab cart" type="button" aria-label="Abrir carrinho">
       <span class="icon" aria-hidden="true">🛒</span>
-      <span class="badge" id="cartCount">0</span>
+      <span class="badge" id="cartCount" aria-live="polite">0</span>
     </button>
   </nav>
 </header>
 
-<main id="app" class="container">
+<main id="app" class="container" style="padding:12px 0 24px;">
   <!-- Home / catálogo -->
   <section id="catalogView" class="view active" aria-labelledby="catalogo-title">
-    <div class="banner">
+    <div class="banner" style="margin-bottom:14px;">
       <h2 id="catalogo-title">Lançamentos & Promoções</h2>
       <p>Nostalgia de verdade. Mídia negra diamante, manual colorido e case lacrada.</p>
     </div>
 
-    <div class="toolbar">
+    <div class="toolbar" style="margin-bottom:14px;">
       <input id="searchInput" class="input" placeholder="Buscar jogo ou console..." aria-label="Buscar produto" />
       <select id="filterConsole" class="input" aria-label="Filtrar por console">
         <option value="">Todos os consoles</option>
@@ -67,21 +81,22 @@
 
   <!-- Detalhe do produto -->
   <section id="productView" class="view" aria-labelledby="produto-title">
-    <button class="link" id="backToCatalog" type="button">← Voltar</button>
+    <button class="link" id="backToCatalog" type="button" aria-label="Voltar para o catálogo">← Voltar</button>
     <h2 id="produto-title" class="visually-hidden">Detalhe do produto</h2>
     <div id="productDetail"></div>
   </section>
 
   <!-- Carrinho -->
   <section id="cartView" class="view" aria-labelledby="carrinho-title">
-    <button class="link" id="backFromCart" type="button">← Voltar</button>
+    <button class="link" id="backFromCart" type="button" aria-label="Voltar para o catálogo">← Voltar</button>
     <h2 id="carrinho-title">Seu Carrinho</h2>
+
     <div id="cartItems"></div>
 
     <div class="shipping">
       <label for="cepInput">Calcular frete (CEP)</label>
       <div class="row">
-        <input id="cepInput" class="input" placeholder="00000-000" inputmode="numeric" pattern="[0-9\-]*">
+        <input id="cepInput" class="input" placeholder="00000-000" inputmode="numeric" pattern="\d{5}-?\d{3}">
         <button id="calcFrete" class="btn" type="button">Calcular</button>
       </div>
       <div id="freteResult" class="muted"></div>
@@ -95,7 +110,7 @@
 
   <!-- Checkout -->
   <section id="checkoutView" class="view" aria-labelledby="checkout-title">
-    <button class="link" id="backFromCheckout" type="button">← Voltar</button>
+    <button class="link" id="backFromCheckout" type="button" aria-label="Voltar para o carrinho">← Voltar</button>
     <h2 id="checkout-title">Checkout</h2>
     <form id="checkoutForm" class="form" novalidate>
       <fieldset>
@@ -107,7 +122,7 @@
 
       <fieldset>
         <legend>Endereço de Entrega</legend>
-        <input class="input" name="cep" placeholder="CEP" required inputmode="numeric" pattern="[0-9\-]*">
+        <input class="input" name="cep" placeholder="CEP" required inputmode="numeric" pattern="\d{5}-?\d{3}">
         <input class="input" name="endereco" placeholder="Rua e número" required>
         <input class="input" name="bairro" placeholder="Bairro" required>
         <input class="input" name="cidade" placeholder="Cidade" required>
@@ -129,14 +144,14 @@
 
   <!-- Pedidos -->
   <section id="ordersView" class="view" aria-labelledby="pedidos-title">
-    <button class="link" id="backFromOrders" type="button">← Voltar</button>
+    <button class="link" id="backFromOrders" type="button" aria-label="Voltar">← Voltar</button>
     <h2 id="pedidos-title">Meus Pedidos</h2>
     <div id="ordersList" class="list"></div>
   </section>
 
   <!-- Suporte -->
   <section id="supportView" class="view" aria-labelledby="suporte-title">
-    <button class="link" id="backFromSupport" type="button">← Voltar</button>
+    <button class="link" id="backFromSupport" type="button" aria-label="Voltar">← Voltar</button>
     <h2 id="suporte-title">Suporte</h2>
     <div class="list">
       <details><summary>Prazo de entrega</summary><p>Entre 2 e 10 dias úteis, conforme CEP.</p></details>
@@ -147,14 +162,18 @@
   </section>
 </main>
 
-<footer class="footer">
+<footer class="footer container" style="margin-top:12px;">
   <small>© World Retro • PWA protótipo</small>
 </footer>
 
+<!-- Registro do Service Worker -->
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js'); // relativo p/ GitHub Pages
+      navigator.serviceWorker
+        .register('./sw.js', { scope: './' })
+        .then(reg => console.log('SW registrado:', reg.scope))
+        .catch(err => console.error('Falha ao registrar SW:', err));
     });
   }
 </script>
