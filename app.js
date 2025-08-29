@@ -6,7 +6,7 @@
 const CONFIG = {
   API_BASE: (typeof window !== 'undefined' && window.API_BASE)
               ? window.API_BASE.replace(/\/$/, '') : '',
-  USE_REAL_CHECKOUT: false   // força modo protótipo
+  USE_REAL_CHECKOUT: true   // força modo protótipo
 };
 
 /* =========================
