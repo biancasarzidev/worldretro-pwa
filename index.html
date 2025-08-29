@@ -17,7 +17,7 @@
 
   <!-- Estilos e App -->
   <link rel="stylesheet" href="./styles.css">
-  <script defer src="./app.js"></script>
+  <script defer src="./app.js?v=8"></script>
 </head>
 
 <body class="body-safe">
@@ -115,19 +115,26 @@
     <form id="checkoutForm" class="form" novalidate>
       <fieldset>
         <legend>Dados do Cliente</legend>
-        <input class="input" name="nome" placeholder="Nome completo" required>
-        <input class="input" name="email" type="email" placeholder="Email" required>
-        <input class="input" name="telefone" placeholder="WhatsApp (opcional)" inputmode="tel">
+        <input class="input" name="nome" placeholder="Nome completo" required autocomplete="name" autocapitalize="words">
+        <input class="input" name="email" type="email" placeholder="Email" required autocomplete="email" inputmode="email">
+        <input class="input" name="telefone" placeholder="WhatsApp (opcional)" inputmode="tel" autocomplete="tel">
       </fieldset>
 
       <fieldset>
         <legend>Endereço de Entrega</legend>
-        <input class="input" name="cep" placeholder="CEP" required inputmode="numeric" pattern="\d{5}-?\d{3}">
-        <input class="input" name="endereco" placeholder="Rua e número" required>
-        <input class="input" name="bairro" placeholder="Bairro" required>
-        <input class="input" name="cidade" placeholder="Cidade" required>
-        <input class="input" name="estado" placeholder="UF" required maxlength="2" style="text-transform:uppercase">
+        <input class="input" name="cep" placeholder="CEP" required inputmode="numeric" pattern="\d{5}-?\d{3}" autocomplete="postal-code">
+        <input class="input" name="endereco" placeholder="Rua e número" required autocomplete="address-line1">
+        <input class="input" name="bairro" placeholder="Bairro" required autocomplete="address-level3">
+        <input class="input" name="cidade" placeholder="Cidade" required autocomplete="address-level2">
+        <input class="input" name="estado" placeholder="UF" required maxlength="2" style="text-transform:uppercase" autocomplete="address-level1">
       </fieldset>
+
+      <!-- Preferência: lembrar dados no dispositivo -->
+      <label class="row" style="margin:8px 0;">
+        <input type="checkbox" id="rememberMe" checked>
+        Lembrar meus dados neste dispositivo
+      </label>
+      <button type="button" id="clearSavedCustomer" class="link">Apagar dados salvos</button>
 
       <fieldset>
         <legend>Pagamento</legend>
@@ -178,8 +185,8 @@
   }
 </script>
 
+<!-- URL da API (Vercel) -->
 <script>window.API_BASE = "https://worldretro-pwa.vercel.app";</script>
-<script defer src="./app.js?v=8"></script>
 
 </body>
 </html>
