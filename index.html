@@ -58,6 +58,50 @@
 <main id="app" class="container" style="padding:12px 0 24px;">
   <!-- Home / catálogo -->
   <section id="catalogView" class="view active" aria-labelledby="catalogo-title">
+
+    <!-- ============ HERO / BANNER DESTAQUE (novo) ============ -->
+    <section class="hero" aria-label="Destaque">
+      <a class="hero-link" href="#catalogGrid">
+        <div class="hero-media">
+          <picture>
+            <!-- WebP (opcional, melhor performance) -->
+            <source
+              srcset="
+                ./img/hero-1920.webp 1920w,
+                ./img/hero-1280.webp 1280w,
+                ./img/hero-768.webp   768w
+              "
+              type="image/webp"
+              sizes="100vw">
+            <!-- JPEG/PNG fallback -->
+            <source
+              srcset="
+                ./img/hero-1920.jpg 1920w,
+                ./img/hero-1280.jpg 1280w,
+                ./img/hero-768.jpg   768w
+              "
+              type="image/jpeg"
+              sizes="100vw">
+            <img
+              src="./img/hero-1280.jpg"
+              alt="Clássicos retrô com descontos — confira as ofertas"
+              loading="eager" decoding="async">
+          </picture>
+          <div class="hero-overlay"></div>
+        </div>
+
+        <!-- Conteúdo opcional sobreposto -->
+        <div class="hero-content">
+          <div>
+            <h2 class="hero-title">Semana Retrô</h2>
+            <p class="hero-sub">Até 40% OFF em clássicos selecionados</p>
+          </div>
+          <button class="btn btn-primary" type="button">Ver ofertas</button>
+        </div>
+      </a>
+    </section>
+    <!-- ============ /HERO ============ -->
+
     <div class="banner" style="margin-bottom:14px;">
       <h2 id="catalogo-title">Lançamentos & Promoções</h2>
       <p>Nostalgia de verdade. Mídia negra diamante, manual colorido e case lacrada.</p>
