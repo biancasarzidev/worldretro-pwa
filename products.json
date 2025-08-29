@@ -2,7 +2,7 @@
   {
     "id": 1,
     "name": "Resident Evil 3",
-    "console": "PS1",
+    "console": "PlayStation I",
     "price": 89.9,
     "image": "./img/resi.png",
     "description": "Mídia negra diamante A, manual colorido, case acrílica lacrada."
@@ -18,7 +18,7 @@
   {
     "id": 3,
     "name": "Final Fantasy VIII",
-    "console": "PS1",
+    "console": "PlayStation I",
     "price": 119.9,
     "image": "./img/final.png",
     "description": "Prensagem industrial, mídia premium e acabamento de fábrica."
